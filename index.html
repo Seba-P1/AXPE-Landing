@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AXPE | Digitaliza tu Negocio y Vende Más</title>
+  <meta name="description"
+    content="AXPE | Soluciones Digitales en Río Colorado. Desarrollo web de alto impacto, sistemas de turnos y automatización para PyMEs. Digitalizo tu negocio para que ahorres tiempo y vendas más." />
+  <meta name="keywords"
+    content="Desarrollo web Rio Colorado, Programador Rio Negro, Sistemas de turnos online, Software a medida Argentina, AXPE Soluciones Digitales, Landing pages persuasivas, Digitalizacion de negocios" />
+  <meta name="author" content="Sebastián Peña" />
+  <meta property="og:title" content="AXPE | Soluciones Digitales" />
+  <meta property="og:description"
+    content="Digitalizo tu negocio para que ahorres tiempo y vendas más. Webs, Apps y Sistemas a medida." />
+  <meta property="og:type" content="website" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@600;700;800&display=swap"
+    rel="stylesheet">
+  <script>
+    // 1. Polyfill robusto para process.env (Crítico para librerías de Node)
+    window.process = window.process || {};
+    window.process.env = window.process.env || {};
+    window.process.env.API_KEY = window.process.env.API_KEY || '';
+
+    // 2. Exponer process globalmente para evitar ReferenceError en módulos
+    var process = window.process;
+  </script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#050505',
+            secondary: '#0F1115',
+            tertiary: '#181B21',
+            accent: {
+              DEFAULT: '#00E091', // Tech Green
+              light: '#4FFFB8',
+              dark: '#008F5D',
+              dim: 'rgba(0, 224, 145, 0.1)'
+            },
+            text: {
+              primary: '#ffffff',
+              secondary: '#a1a1aa'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Poppins', 'sans-serif'],
+          },
+          animation: {
+            'float': 'float 6s ease-in-out infinite',
+            'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-20px)' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background-color: #050505;
+      color: #ffffff;
+      overflow-x: hidden;
+      /* Prevent horizontal scroll */
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #050505;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #181B21;
+      border-radius: 5px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #00E091;
+    }
+
+    /* Loading State */
+    #root:empty::before {
+      content: 'Cargando AXPE...';
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #00E091;
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.5rem;
+      animation: pulse 1s infinite;
+    }
+  </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@18.2.0",
+    "react/": "https://esm.sh/react@18.2.0/",
+    "react-dom": "https://esm.sh/react-dom@18.2.0",
+    "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+    "react-router-dom": "https://esm.sh/react-router-dom@6.22.3?deps=react@18.2.0,react-dom@18.2.0",
+    "@google/genai": "https://esm.sh/@google/genai@0.2.0",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/"
+  }
+}
+</script>
+</head>
+
+<body>
+  <div id="root"></div>
+  <script>
+    // Global error handler for script loading failures
+    window.onerror = function (message, source, lineno, colno, error) {
+      console.error("Global Error:", message);
+      const root = document.getElementById('root');
+      if (root && root.innerHTML === '') {
+        root.innerHTML = `
+                    <div style="height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:20px; background:#050505; color:white;">
+                        <h2 style="color:#ff5555; margin-bottom:10px; font-family:sans-serif;">Error de Carga</h2>
+                        <p style="color:#aaa; font-family:sans-serif;">No se pudo iniciar la aplicación.</p>
+                        <button onclick="window.location.reload()" style="margin-top:20px; padding:10px 20px; background:#00E091; border:none; border-radius:5px; cursor:pointer; font-weight:bold;">Recargar</button>
+                    </div>
+                `;
+      }
+    };
+  </script>
+  <script type="module" src="/index.tsx"></script>
+</body>
+
+</html>
