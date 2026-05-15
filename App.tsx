@@ -3,44 +3,28 @@ import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { Services } from './components/Services';
+import { Projects } from './components/Projects';
+import { Process } from './components/Process';
+import { Testimonials } from './components/Testimonials';
 import { Contact } from './components/Contact';
 import { Footer } from './components/Footer';
 import { ServiceDetail } from './pages/ServiceDetail';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { ScrollToTop } from './components/ScrollToTop';
 
+import { Differentiators } from './components/Differentiators';
+
 // Componente Home que agrupa las secciones de una página
 const Home = () => (
   <>
     <Hero />
-    
-    {/* Process Section */}
-    <section id="proceso" className="py-20 bg-secondary border-y border-white/5 relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-accent/50 to-transparent"></div>
-        <div className="container mx-auto px-6">
-            <div className="text-center mb-16">
-                <h2 className="text-accent font-bold tracking-wide uppercase text-xs mb-2">Metodología</h2>
-                <h3 className="font-display text-4xl text-white font-bold">Cómo Trabajo</h3>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-                {[
-                    { step: "01", title: "Charla Inicial", desc: "Me contás tu idea. Definimos alcance y objetivos sin vueltas." },
-                    { step: "02", title: "Propuesta", desc: "Plan detallado. Maqueta previa si es necesario." },
-                    { step: "03", title: "Desarrollo", desc: "Manos a la obra. Avances semanales reales." },
-                    { step: "04", title: "Entrega", desc: "Tu sistema online. Capacitación y soporte." }
-                ].map((item, i) => (
-                    <div key={i} className="relative p-6 rounded-xl bg-tertiary/30 hover:bg-tertiary transition-all border border-white/5 hover:border-accent/30 group">
-                        <span className="text-6xl font-display font-bold text-white/5 absolute top-2 right-4 group-hover:text-accent/10 transition-colors">{item.step}</span>
-                        <h4 className="text-xl font-bold text-white mb-2 relative z-10">{item.title}</h4>
-                        <p className="text-text-secondary text-sm relative z-10">{item.desc}</p>
-                    </div>
-                ))}
-            </div>
-        </div>
-    </section>
-
+    <Differentiators />
     <Services />
+    <Projects />
+    
+    <Process />
+
+    <Testimonials />
     <Contact />
   </>
 );

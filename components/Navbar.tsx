@@ -25,6 +25,7 @@ export const Navbar: React.FC = () => {
   const navLinks = [
     { name: 'Inicio', path: '/', isAnchor: false },
     { name: 'Servicios', path: isHome ? '#servicios' : '/', isAnchor: isHome },
+    { name: 'Proyectos', path: isHome ? '#proyectos' : '/', isAnchor: isHome },
     { name: 'Proceso', path: isHome ? '#proceso' : '/', isAnchor: isHome },
   ];
 

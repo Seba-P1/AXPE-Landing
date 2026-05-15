@@ -114,8 +114,8 @@ export const servicesData: Service[] = [
   },
   {
     id: 'mockup',
-    title: 'Prototipos de Alta Fidelidad',
-    shortDescription: 'Visualizá tu idea antes de programar. Minimizá riesgos.',
+    title: 'Diseño de Producto Digital',
+    shortDescription: 'Diseño UI/UX detallado antes de programar. Reducí riesgos y costos desde el inicio.',
     longDescription: '¿Tenés una idea para una nueva App o Sistema complejo? Te entrego un prototipo interactivo (Figma) que funciona como si fuera la app real. Ideal para validar con inversores, testear con clientes o simplemente estar 100% seguro del diseño antes de invertir en el desarrollo completo.',
     icon: '🎨',
     deliveryTime: '3-5 días',

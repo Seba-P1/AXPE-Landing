@@ -25,6 +25,7 @@ export interface ContactFormData {
   phone: string;
   serviceInterest: string;
   message: string;
+  website?: string;
 }
 
 export interface GeneratedImage {

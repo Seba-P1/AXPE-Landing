@@ -9,7 +9,7 @@ export const Services: React.FC = () => {
       <div className="container mx-auto px-6">
         <RevealOnScroll>
           <div className="text-center mb-16">
-            <h2 className="text-accent font-bold tracking-widest uppercase text-xs mb-3">Mis Servicios</h2>
+            <h2 className="text-accent font-bold tracking-widest uppercase text-xs mb-3">SERVICIOS</h2>
             <h3 className="font-display text-4xl md:text-5xl font-bold text-white mb-6">Tecnología para tu Negocio</h3>
             <p className="text-text-secondary max-w-2xl mx-auto">
               Herramientas profesionales pensadas para escalar. Desde tu primera web hasta sistemas complejos de gestión.

@@ -3,18 +3,19 @@ import { useLocation } from 'react-router-dom';
 import { ContactFormData } from '../types';
 import { RevealOnScroll } from './RevealOnScroll';
 import { supabase } from '../lib/supabaseClient';
-import emailjs from '@emailjs/browser';
 
 export const Contact: React.FC = () => {
     const location = useLocation();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitStatus, setSubmitStatus] = useState<{ type: 'success' | 'error', message: string } | null>(null);
+    const [errors, setErrors] = useState<Record<string, string>>({});
     const [formData, setFormData] = useState<ContactFormData>({
         name: '',
         email: '',
         phone: '',
         serviceInterest: 'web',
-        message: ''
+        message: '',
+        website: ''
     });
 
     useEffect(() => {
@@ -35,6 +36,31 @@ export const Contact: React.FC = () => {
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
+        // Clear error when user types
+        if (errors[e.target.name]) {
+            setErrors(prev => ({ ...prev, [e.target.name]: '' }));
+        }
+    };
+
+    const validate = () => {
+        const newErrors: Record<string, string> = {};
+        
+        if (!formData.name.trim()) newErrors.name = 'El nombre es requerido';
+        else if (formData.name.trim().length > 100) newErrors.name = 'El nombre no puede tener más de 100 caracteres';
+
+        if (!formData.email.trim()) newErrors.email = 'El email es requerido';
+        else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) newErrors.email = 'El email no es válido';
+        else if (formData.email.trim().length > 200) newErrors.email = 'El email no puede tener más de 200 caracteres';
+
+        if (formData.phone && formData.phone.trim().length > 20) newErrors.phone = 'El teléfono no puede tener más de 20 caracteres';
+
+        if (!formData.serviceInterest) newErrors.serviceInterest = 'El servicio es requerido';
+
+        if (!formData.message.trim()) newErrors.message = 'El mensaje es requerido';
+        else if (formData.message.trim().length > 2000) newErrors.message = 'El mensaje no puede tener más de 2000 caracteres';
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
     };
 
     const saveToSupabase = async () => {
@@ -43,11 +69,11 @@ export const Contact: React.FC = () => {
                 .from('leads')
                 .insert([
                     {
-                        name: formData.name,
-                        email: formData.email,
-                        phone: formData.phone,
+                        name: formData.name.trim(),
+                        email: formData.email.trim(),
+                        phone: formData.phone?.trim() || null,
                         service_interest: formData.serviceInterest,
-                        message: formData.message
+                        message: formData.message.trim()
                     }
                 ]);
             if (error) throw error;
@@ -60,6 +86,10 @@ export const Contact: React.FC = () => {
 
     const handleSubmit = async (e?: React.FormEvent) => {
         if (e) e.preventDefault();
+        
+        // Honeypot check
+        if (formData.website) return;
+        
         setIsSubmitting(true);
         setSubmitStatus(null);
 
@@ -70,13 +100,13 @@ export const Contact: React.FC = () => {
         const phoneNumber = "5492931454805";
         const text = `* Nueva Consulta desde la Web AXPE * 🚀
 
-* Nombre:* ${formData.name}
+* Nombre:* ${formData.name.trim()}
 * Rubro / Servicio:* ${getServiceLabel(formData.serviceInterest)}
-* Email:* ${formData.email}
-* Teléfono:* ${formData.phone || 'No especificado'}
+* Email:* ${formData.email.trim()}
+* Teléfono:* ${formData.phone?.trim() || 'No especificado'}
 
 * Mensaje:*
-    ${formData.message}
+    ${formData.message.trim()}
 
 ---
     _Enviado desde el formulario de contacto._`;
@@ -89,35 +119,35 @@ export const Contact: React.FC = () => {
     };
 
     const handleEmailSubmit = async () => {
+        // Honeypot check: reject silently without calling Supabase
+        if (formData.website) return;
+        
+        if (!validate()) return;
+
         setIsSubmitting(true);
         setSubmitStatus(null);
 
-        // 1. Save to Supabase
-        await saveToSupabase();
-
-        // 2. Send via EmailJS
-        // Nombres de variables ajustados a la captura de pantalla del usuario
-        const templateParams = {
-            name: formData.name,      // {{name}}
-            email: formData.email,    // {{email}}
-            message: formData.message, // {{message}}
-            title: getServiceLabel(formData.serviceInterest), // {{title}}
-            phone: formData.phone || 'No especificado'
-        };
-
         try {
-            await emailjs.send(
-                'service_8wnlref',
-                'template_a7rzo45',
-                templateParams,
-                '7XbrIYqHycsctAl0p'
-            );
-            setSubmitStatus({ type: 'success', message: '¡Correo enviado con éxito! Me pondré en contacto pronto.' });
+            const { error } = await supabase
+                .from('leads')
+                .insert([
+                    {
+                        name: formData.name.trim(),
+                        email: formData.email.trim(),
+                        phone: formData.phone?.trim() || null,
+                        service_interest: formData.serviceInterest,
+                        message: formData.message.trim()
+                    }
+                ]);
+
+            if (error) throw error;
+
+            setSubmitStatus({ type: 'success', message: '¡Gracias! Te contactamos pronto.' });
             // Reset form
-            setFormData({ name: '', email: '', phone: '', serviceInterest: 'web', message: '' });
+            setFormData({ name: '', email: '', phone: '', serviceInterest: 'web', message: '', website: '' });
         } catch (error) {
-            console.error('EmailJS Error:', error);
-            setSubmitStatus({ type: 'error', message: 'Hubo un problema al enviar el correo. Por favor, intenta por WhatsApp.' });
+            console.error('Supabase Error:', error);
+            setSubmitStatus({ type: 'error', message: 'Algo salió mal. Intentá de nuevo.' });
         } finally {
             setIsSubmitting(false);
         }
@@ -147,7 +177,7 @@ export const Contact: React.FC = () => {
                             <h2 className="text-accent font-bold tracking-wide uppercase text-xs mb-2">Hablemos</h2>
                             <h3 className="font-display text-4xl md:text-5xl font-bold text-white mb-6">Impulsá tu Negocio</h3>
                             <p className="text-text-secondary mb-8 text-lg">
-                                Soy Sebastián Peña. Estoy en Río Colorado, pero trabajo para donde me necesites. Contame tu idea y busquemos la forma más eficiente de hacerla realidad.
+                                En AXPE trabajamos para donde nos necesités. Contanos tu idea y buscamos la forma más eficiente de hacerla realidad.
                             </p>
 
                             <div className="space-y-6">
@@ -157,7 +187,7 @@ export const Contact: React.FC = () => {
                                     </div>
                                     <div>
                                         <h4 className="text-white font-bold">Email</h4>
-                                        <a href="mailto:seba.ap793@gmail.com" className="text-text-secondary hover:text-accent transition-colors">seba.ap793@gmail.com</a>
+                                        <a href="mailto:hola@axpe.com.ar" className="text-text-secondary hover:text-accent transition-colors">hola@axpe.com.ar</a>
                                     </div>
                                 </div>
 
@@ -192,18 +222,30 @@ export const Contact: React.FC = () => {
                                         {submitStatus.message}
                                     </div>
                                 )}
+                                
+                                {/* Honeypot Field */}
+                                <input 
+                                    type="text" 
+                                    name="website" 
+                                    value={formData.website} 
+                                    onChange={handleChange} 
+                                    style={{ display: 'none' }} 
+                                    tabIndex={-1} 
+                                    autoComplete="off" 
+                                />
+
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div>
                                         <label className="block text-sm font-medium text-text-secondary mb-2">Nombre Completo</label>
                                         <input
                                             type="text"
                                             name="name"
-                                            required
                                             value={formData.name}
                                             onChange={handleChange}
-                                            className="w-full bg-secondary border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all placeholder-white/20"
+                                            className={`w-full bg-secondary border ${errors.name ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-white/10 focus:border-accent focus:ring-accent'} rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-1 transition-all placeholder-white/20`}
                                             placeholder="Tu nombre"
                                         />
+                                        {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
                                     </div>
                                     <div>
                                         <label className="block text-sm font-medium text-text-secondary mb-2">Teléfono</label>
@@ -212,9 +254,10 @@ export const Contact: React.FC = () => {
                                             name="phone"
                                             value={formData.phone}
                                             onChange={handleChange}
-                                            className="w-full bg-secondary border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all placeholder-white/20"
+                                            className={`w-full bg-secondary border ${errors.phone ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-white/10 focus:border-accent focus:ring-accent'} rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-1 transition-all placeholder-white/20`}
                                             placeholder="Tu celular"
                                         />
+                                        {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
                                     </div>
                                 </div>
 
@@ -223,12 +266,12 @@ export const Contact: React.FC = () => {
                                     <input
                                         type="email"
                                         name="email"
-                                        required
                                         value={formData.email}
                                         onChange={handleChange}
-                                        className="w-full bg-secondary border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all placeholder-white/20"
+                                        className={`w-full bg-secondary border ${errors.email ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-white/10 focus:border-accent focus:ring-accent'} rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-1 transition-all placeholder-white/20`}
                                         placeholder="tu@email.com"
                                     />
+                                    {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
                                 </div>
 
                                 <div>
@@ -237,7 +280,7 @@ export const Contact: React.FC = () => {
                                         name="serviceInterest"
                                         value={formData.serviceInterest}
                                         onChange={handleChange}
-                                        className="w-full bg-secondary border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all"
+                                        className={`w-full bg-secondary border ${errors.serviceInterest ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-white/10 focus:border-accent focus:ring-accent'} rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-1 transition-all`}
                                     >
                                         <option value="web">Ventas y Presencia Web</option>
                                         <option value="turnos">Reservas y Turnos Online</option>
@@ -245,19 +288,20 @@ export const Contact: React.FC = () => {
                                         <option value="mockup">Maqueta / Prototipo</option>
                                         <option value="otro">Otra consulta</option>
                                     </select>
+                                    {errors.serviceInterest && <p className="text-red-500 text-xs mt-1">{errors.serviceInterest}</p>}
                                 </div>
 
                                 <div>
                                     <label className="block text-sm font-medium text-text-secondary mb-2">Contame un poco más</label>
                                     <textarea
                                         name="message"
-                                        required
                                         value={formData.message}
                                         onChange={handleChange}
                                         rows={4}
-                                        className="w-full bg-secondary border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all resize-none placeholder-white/20"
+                                        className={`w-full bg-secondary border ${errors.message ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-white/10 focus:border-accent focus:ring-accent'} rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-1 transition-all resize-none placeholder-white/20`}
                                         placeholder="Detalles de tu proyecto..."
                                     ></textarea>
+                                    {errors.message && <p className="text-red-500 text-xs mt-1">{errors.message}</p>}
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -267,7 +311,7 @@ export const Contact: React.FC = () => {
                                         disabled={isSubmitting}
                                         className={`bg-accent text-primary font-bold py-4 rounded-xl hover:shadow-[0_0_20px_rgba(0,224,145,0.4)] transition-all transform hover:-translate-y-1 flex items-center justify-center space-x-2 hover:bg-white ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
                                     >
-                                        <span>{isSubmitting ? 'Enviando...' : 'WhatsApp'}</span>
+                                        <span>WhatsApp</span>
                                         {!isSubmitting && <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-8.683-2.031-9.667-.272-.984-.47-.149-.669.05-.198.199-.744.744-1.139 1.14-.396.396-.793.892-.099 2.084.694 1.192 2.478 3.687 5.963 5.163 2.724 1.153 3.696 1.054 4.394.954.745-.1 2.378-.968 2.724-1.93.348-.968.348-1.782.248-1.957z" /></svg>}
                                     </button>
 
@@ -277,12 +321,24 @@ export const Contact: React.FC = () => {
                                         disabled={isSubmitting}
                                         className={`bg-secondary border border-white/10 text-white font-bold py-4 rounded-xl hover:bg-tertiary transition-all transform hover:-translate-y-1 flex items-center justify-center space-x-2 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
                                     >
-                                        <span>{isSubmitting ? 'Enviando...' : 'Email'}</span>
-                                        {!isSubmitting && <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>}
+                                        {isSubmitting ? (
+                                            <div className="flex items-center space-x-2">
+                                                <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                </svg>
+                                                <span>Enviando...</span>
+                                            </div>
+                                        ) : (
+                                            <>
+                                                <span>Email</span>
+                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                                            </>
+                                        )}
                                     </button>
                                 </div>
                                 <p className="text-xs text-center text-text-secondary mt-4">
-                                    {isSubmitting ? 'Guardando tu consulta de forma segura...' : 'Elegí el medio que te sea más cómodo para enviarme tu consulta.'}
+                                    Elegí el medio que te sea más cómodo para enviarme tu consulta.
                                 </p>
                             </form>
                         </div>
