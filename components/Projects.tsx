@@ -23,13 +23,15 @@ export const Projects: React.FC = () => {
                                 {/*
                                 // ─────────────────────────────────────────────────────
                                 // PROJECT IMAGE — GUENUMIL
-                                // Place image file at: /public/images/proyectos/guenumil-hero.jpg
+                                // Place image file at: /public/images/proyectos/guenumil-hero.png
                                 // Recommended: 1280x720px min — .jpg, .png or .webp
                                 // ─────────────────────────────────────────────────────
                                 */}
-                                <div className="w-full h-full flex items-center justify-center border border-[rgba(0,255,135,0.15)] bg-[#111111] motion-safe:transition-transform motion-safe:duration-250 ease-in-out group-hover:scale-105 motion-reduce:group-hover:scale-100">
-                                    <span className="text-white text-[32px] font-bold">JG</span>
-                                </div>
+                                <img 
+                                    src="/images/proyectos/guenumil-hero.png" 
+                                    alt="Juan Güenumil Inmobiliaria" 
+                                    className="w-full h-full object-cover motion-safe:transition-transform motion-safe:duration-250 ease-in-out group-hover:scale-105 motion-reduce:group-hover:scale-100"
+                                />
                             </div>
                             <div className="p-8 flex flex-col flex-grow">
                                 <span className="text-[#00ff87] text-xs font-bold uppercase tracking-wider mb-4 block">Inmobiliaria / Web App</span>
@@ -64,13 +66,15 @@ export const Projects: React.FC = () => {
                                 {/*
                                 // ─────────────────────────────────────────────────────
                                 // PROJECT IMAGE — RC PLAY
-                                // Place image file at: /public/images/proyectos/rcplay-hero.jpg
+                                // Place image file at: /public/images/proyectos/rcplay-hero.png
                                 // Recommended: 1280x720px min — .jpg, .png or .webp
                                 // ─────────────────────────────────────────────────────
                                 */}
-                                <div className="w-full h-full flex items-center justify-center border border-[rgba(0,255,135,0.15)] bg-[#111111] motion-safe:transition-transform motion-safe:duration-250 ease-in-out group-hover:scale-105 motion-reduce:group-hover:scale-100">
-                                    <span className="text-white text-[32px] font-bold">RCP</span>
-                                </div>
+                                <img 
+                                    src="/images/proyectos/rcplay-hero.png" 
+                                    alt="RC Play" 
+                                    className="w-full h-full object-cover motion-safe:transition-transform motion-safe:duration-250 ease-in-out group-hover:scale-105 motion-reduce:group-hover:scale-100"
+                                />
                             </div>
                             <div className="p-8 flex flex-col flex-grow">
                                 <span className="text-[#00ff87] text-xs font-bold uppercase tracking-wider mb-4 block">Entretenimiento / Web App</span>
@@ -85,14 +89,15 @@ export const Projects: React.FC = () => {
                                         </span>
                                     ))}
                                 </div>
-                                <span 
-                                    role="button" 
-                                    aria-disabled="true" 
-                                    tabIndex={0}
-                                    className="inline-flex items-center text-white/50 font-medium cursor-default mt-auto w-fit focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00ff87] rounded"
+                                <a 
+                                    href="https://rcplay.com.ar/" 
+                                    target="_blank" 
+                                    rel="noopener noreferrer" 
+                                    aria-label="Ver sitio de RC Play (abre en nueva pestaña)" 
+                                    className="inline-flex items-center text-white font-medium hover:text-[#00ff87] motion-safe:transition-colors mt-auto w-fit focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00ff87] rounded"
                                 >
-                                    Próximamente
-                                </span>
+                                    Ver sitio <span className="ml-2 group-hover:translate-x-1 motion-safe:transition-transform motion-reduce:group-hover:translate-x-0">→</span>
+                                </a>
                             </div>
                         </div>
                     </RevealOnScroll>
