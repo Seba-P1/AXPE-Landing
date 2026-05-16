@@ -19,7 +19,7 @@ export const Projects: React.FC = () => {
                     {/* CARD 1 — Juan Güenumil */}
                     <RevealOnScroll delay={0} className="h-full">
                         <div className="group relative bg-[#111111] rounded-2xl border border-white/5 overflow-hidden flex flex-col h-full motion-safe:transition-all motion-safe:duration-250 ease-in-out hover:scale-[1.02] motion-reduce:hover:scale-100 hover:border-[rgba(0,255,135,0.4)] hover:shadow-[0_8px_32px_rgba(0,255,135,0.08)]">
-                            <div className="w-full h-[200px] md:h-[240px] lg:h-[260px] overflow-hidden relative bg-[#111111]">
+                            <div className="w-full aspect-video overflow-hidden relative bg-[#000000]">
                                 {/*
                                 // ─────────────────────────────────────────────────────
                                 // PROJECT IMAGE — GUENUMIL
@@ -30,7 +30,7 @@ export const Projects: React.FC = () => {
                                 <img 
                                     src="/images/proyectos/guenumil-hero.png" 
                                     alt="Juan Güenumil Inmobiliaria" 
-                                    className="w-full h-full object-cover motion-safe:transition-transform motion-safe:duration-250 ease-in-out group-hover:scale-105 motion-reduce:group-hover:scale-100"
+                                    className="w-full h-full object-contain motion-safe:transition-transform motion-safe:duration-250 ease-in-out group-hover:scale-105 motion-reduce:group-hover:scale-100"
                                 />
                             </div>
                             <div className="p-8 flex flex-col flex-grow">
@@ -62,7 +62,7 @@ export const Projects: React.FC = () => {
                     {/* CARD 2 — RC Play */}
                     <RevealOnScroll delay={150} className="h-full">
                         <div className="group relative bg-[#111111] rounded-2xl border border-white/5 overflow-hidden flex flex-col h-full motion-safe:transition-all motion-safe:duration-250 ease-in-out hover:scale-[1.02] motion-reduce:hover:scale-100 hover:border-[rgba(0,255,135,0.4)] hover:shadow-[0_8px_32px_rgba(0,255,135,0.08)]">
-                            <div className="w-full h-[200px] md:h-[240px] lg:h-[260px] overflow-hidden relative bg-[#111111]">
+                            <div className="w-full aspect-video overflow-hidden relative bg-[#000000]">
                                 {/*
                                 // ─────────────────────────────────────────────────────
                                 // PROJECT IMAGE — RC PLAY
@@ -73,7 +73,7 @@ export const Projects: React.FC = () => {
                                 <img 
                                     src="/images/proyectos/rcplay-hero.png" 
                                     alt="RC Play" 
-                                    className="w-full h-full object-cover motion-safe:transition-transform motion-safe:duration-250 ease-in-out group-hover:scale-105 motion-reduce:group-hover:scale-100"
+                                    className="w-full h-full object-contain motion-safe:transition-transform motion-safe:duration-250 ease-in-out group-hover:scale-105 motion-reduce:group-hover:scale-100"
                                 />
                             </div>
                             <div className="p-8 flex flex-col flex-grow">
