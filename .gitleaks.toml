@@ -1,0 +1,62 @@
+title = "AEGIS Gitleaks Config — supabase-keep-alive + proyectos Seba-P1"
+
+[extend]
+useDefault = true
+
+# ─── Reglas custom para proyectos ───
+
+[[rules]]
+id = "supabase-service-role-jwt"
+description = "Supabase service_role JWT (NUNCA en frontend)"
+regex = '''eyJ[a-zA-Z0-9_=]+\.eyJ[a-zA-Z0-9_=]+\.[a-zA-Z0-9_\-\+\/=]+'''
+path = '''(\.env|config|src)'''
+keywords = ["service_role", "SUPABASE_SERVICE", "supabase_service_role"]
+
+[[rules]]
+id = "supabase-anon-key"
+description = "Supabase anon key (debe ir en .env, no hardcodeada)"
+regex = '''eyJ[a-zA-Z0-9_=]+\.[a-zA-Z0-9_=]+(\.)?[a-zA-Z0-9_\-]*'''
+path = '''(src|components|pages|app)'''
+keywords = ["supabase", "anon", "SUPABASE_KEY"]
+
+[[rules]]
+id = "openrouter-api-key"
+description = "OpenRouter API key"
+regex = '''sk-or-v1-[a-zA-Z0-9]{20,}'''
+keywords = ["openrouter", "OPENROUTER"]
+
+[[rules]]
+id = "openai-api-key"
+description = "OpenAI / OpenRouter key"
+regex = '''sk-[a-zA-Z0-9]{20,}'''
+keywords = ["sk-", "OPENAI", "openai"]
+
+[[rules]]
+id = "github-pat"
+description = "GitHub Personal Access Token"
+regex = '''ghp_[a-zA-Z0-9]{36,}|gho_[a-zA-Z0-9]{36,}|ghu_[a-zA-Z0-9]{36,}|ghs_[a-zA-Z0-9]{36,}|ghr_[a-zA-Z0-9]{36,}'''
+keywords = ["ghp_", "gho_", "ghs_", "ghr_"]
+
+[[rules]]
+id = "supabase-db-url"
+description = "Supabase database connection string"
+regex = '''postgresql://[a-zA-Z0-9]+:[a-zA-Z0-9]+@[a-zA-Z0-9.-]+:[0-9]+/postgres'''
+keywords = ["postgresql://", "supabase"]
+
+[[rules]]
+id = "jwt-base64"
+description = "Generic JWT token (sospechoso en código)"
+regex = '''eyJ[a-zA-Z0-9_=]+\.eyJ[a-zA-Z0-9_=]+\.[a-zA-Z0-9_\-\+\/=]+'''
+keywords = ["eyJ"]
+
+[[rules]]
+id = "private-ssh-key"
+description = "Private SSH key embedded in code"
+regex = '''-----BEGIN (OPENSSH|RSA|DSA|EC|PGP) PRIVATE KEY-----'''
+keywords = ["PRIVATE KEY"]
+
+[[rules]]
+id = "generic-api-key"
+description = "Generic API key pattern (token=, apikey=, etc.)"
+regex = '''(?i)(api[_-]?key|token|secret|password)\s*[=:]\s*['"][a-zA-Z0-9_\-=]{16,}['"]'''
+keywords = ["api_key", "apikey", "api-key", "token", "secret"]

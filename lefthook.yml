@@ -1,0 +1,39 @@
+# AEGIS lefthook.yml — template para proyectos Seba-P1
+# Instalar: lefthook install (en cada repo)
+
+env:
+  PATH: "/c/Users/sebas/AppData/Local/Microsoft/WinGet/Packages/Gitleaks.Gitleaks_Microsoft.Winget.Source_8wekyb3d8bbwe:${PATH}"
+
+output:
+  - meta
+  - summary
+  - failure
+
+pre-commit:
+  parallel: true
+  commands:
+    01-gitleaks:
+      tags: secrets critical
+      run: gitleaks protect --staged --redact --no-banner
+    02-no-todo-fixme:
+      tags: hygiene
+      glob: "src/**/*.{ts,tsx,js,jsx}"
+      run: |
+        if grep -rn "TODO\|FIXME\|XXX" "{staged_files}" 2>/dev/null; then echo "❌ TODOs no permitidos en commits"; exit 1; fi
+
+pre-push:
+  parallel: false
+  commands:
+    01-gitleaks-full:
+      tags: secrets
+      run: gitleaks detect --redact --no-banner --verbose
+    02-tests:
+      tags: tests
+      run: |
+        if [ -f "package.json" ]; then pnpm test -- --bail --silent; else echo "ℹ️ No package.json, skipping tests"; fi
+
+commit-msg:
+  commands:
+    01-conventional:
+      run: |
+        if command -v commitlint &> /dev/null; then npx --no -- commitlint --edit {1}; else echo "ℹ️ commitlint not installed, skipping"; fi
