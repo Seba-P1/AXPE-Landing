@@ -6,7 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AXPE | Soluciones Digitales — Río Colorado, Patagonia</title>
   <meta name="description" content="Desarrollamos sitios web, sistemas de gestión y aplicaciones a medida para PyMEs y profesionales de la Patagonia. Tecnología moderna, atención directa." />
-  <meta name="keywords" content="desarrollo web patagonia, sistemas de gestion pyme, axpe soluciones digitales, rio colorado rio negro, paginas web profesionales argentina" />
   <link rel="canonical" href="https://axpe.com.ar" />
   <meta name="author" content="AXPE" />
 
@@ -86,6 +85,11 @@
       scroll-behavior: smooth;
     }
 
+    /* Compensate for fixed navbar when scrolling to anchors */
+    section[id] {
+      scroll-margin-top: 80px;
+    }
+
     body {
       background-color: #050505;
       color: #ffffff;
@@ -136,7 +140,40 @@
     "react-dom/": "https://esm.sh/react-dom@^19.2.4/"
   }
 }
-</script>
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ProfessionalService",
+    "name": "AXPE Soluciones Digitales",
+    "url": "https://axpe.com.ar",
+    "image": "https://axpe.com.ar/images/og-image.jpg",
+    "description": "Desarrollamos sitios web, sistemas de gestión y aplicaciones a medida para PyMEs y profesionales de la Patagonia.",
+    "priceRange": "$$",
+    "telephone": "+54-9-2931-454805",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Río Colorado",
+      "addressRegion": "Río Negro",
+      "addressCountry": "AR"
+    },
+    "areaServed": [
+      { "@type": "AdministrativeArea", "name": "Río Negro" },
+      { "@type": "AdministrativeArea", "name": "La Pampa" },
+      { "@type": "Country", "name": "Argentina" }
+    ],
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "Servicios AXPE",
+      "itemListElement": [
+        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Ventas y Presencia Web" } },
+        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Reservas y Turnos Online" } },
+        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Gestión y Procesos PyME" } },
+        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Diseño de Producto Digital" } }
+      ]
+    }
+  }
+  </script>
 </head>
 
 <body>

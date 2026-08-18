@@ -36,6 +36,9 @@ const RevealScale: React.FC<{children: React.ReactNode}> = ({ children }) => {
 };
 
 export const Testimonials: React.FC = () => {
+    // TODO: activar cuando haya un segundo/tercer testimonio real
+    const SHOW_PLACEHOLDER_TESTIMONIALS = false;
+    
     return (
         <section id="testimonios" className="py-24 bg-[#0a0a0a] relative border-t border-white/5">
             {/* Estilos para la animación de pulso customizada */}
@@ -101,16 +104,18 @@ export const Testimonials: React.FC = () => {
                     </RevealScale>
 
                     {/* Tarjetas Placeholder */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-[700px]">
-                        {[1, 2].map((item) => (
-                            <RevealOnScroll key={item} delay={item * 100} className="w-full">
-                                <div className="min-h-[120px] w-full border border-dashed border-[rgba(0,255,135,0.25)] rounded-2xl flex flex-col items-center justify-center bg-transparent animate-custom-pulse p-6 text-center">
-                                    <span className="text-white/40 text-[14px] font-medium mb-1">Próximo testimonio</span>
-                                    <span className="text-white/20 text-[12px]">En camino...</span>
-                                </div>
-                            </RevealOnScroll>
-                        ))}
-                    </div>
+                    {SHOW_PLACEHOLDER_TESTIMONIALS && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-[700px]">
+                            {[1, 2].map((item) => (
+                                <RevealOnScroll key={item} delay={item * 100} className="w-full">
+                                    <div className="min-h-[120px] w-full border border-dashed border-[rgba(0,255,135,0.25)] rounded-2xl flex flex-col items-center justify-center bg-transparent animate-custom-pulse p-6 text-center">
+                                        <span className="text-white/40 text-[14px] font-medium mb-1">Próximo testimonio</span>
+                                        <span className="text-white/20 text-[12px]">En camino...</span>
+                                    </div>
+                                </RevealOnScroll>
+                            ))}
+                        </div>
+                    )}
                 </div>
             </div>
         </section>

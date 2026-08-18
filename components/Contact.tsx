@@ -240,6 +240,7 @@ export const Contact: React.FC = () => {
                                         <input
                                             type="text"
                                             name="name"
+                                            autoComplete="name"
                                             value={formData.name}
                                             onChange={handleChange}
                                             className={`w-full bg-secondary border ${errors.name ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-white/10 focus:border-accent focus:ring-accent'} rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-1 transition-all placeholder-white/20`}
@@ -252,6 +253,7 @@ export const Contact: React.FC = () => {
                                         <input
                                             type="tel"
                                             name="phone"
+                                            autoComplete="tel"
                                             value={formData.phone}
                                             onChange={handleChange}
                                             className={`w-full bg-secondary border ${errors.phone ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-white/10 focus:border-accent focus:ring-accent'} rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-1 transition-all placeholder-white/20`}
@@ -266,6 +268,7 @@ export const Contact: React.FC = () => {
                                     <input
                                         type="email"
                                         name="email"
+                                        autoComplete="email"
                                         value={formData.email}
                                         onChange={handleChange}
                                         className={`w-full bg-secondary border ${errors.email ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-white/10 focus:border-accent focus:ring-accent'} rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-1 transition-all placeholder-white/20`}
