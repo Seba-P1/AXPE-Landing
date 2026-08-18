@@ -61,14 +61,14 @@ const projects: ProjectData[] = [
     }
 ];
 
-// Placeholder for missing images
-const ImagePlaceholder: React.FC<{ initials: string; alt: string }> = ({ initials, alt }) => (
-    <div className="w-full h-full bg-[#111111] flex items-center justify-center border border-[rgba(0,255,135,0.15)]" aria-label={alt}>
-        <span className="text-[#00ff87]/40 text-4xl font-bold font-display">{initials}</span>
+// Placeholder component
+const Placeholder: React.FC<{ initials: string }> = ({ initials }) => (
+    <div className="w-full h-full bg-gradient-to-br from-[#1a1a1a] to-[#0a0a0a] flex items-center justify-center border border-[rgba(0,255,135,0.2)]">
+        <span className="text-[#00ff87]/30 text-5xl font-bold font-display tracking-wider">{initials}</span>
     </div>
 );
 
-// Video component with lazy loading and fallback to image
+// Video component with lazy loading
 const LazyVideo: React.FC<{
     src: string;
     poster: string;
@@ -85,9 +85,7 @@ const LazyVideo: React.FC<{
                 if (entry.isIntersecting) {
                     setIsVisible(true);
                     if (videoRef.current) {
-                        videoRef.current.play().catch(() => {
-                            // Autoplay blocked, video will show poster
-                        });
+                        videoRef.current.play().catch(() => {});
                     }
                 } else {
                     setIsVisible(false);
@@ -125,106 +123,98 @@ const LazyVideo: React.FC<{
     );
 };
 
-// Device mockup composition
-const DeviceMockup: React.FC<{ project: ProjectData; isVisible: boolean }> = ({ project, isVisible }) => {
-    const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-    const [isHovered, setIsHovered] = useState(false);
-    const cardRef = useRef<HTMLDivElement>(null);
-
-    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-        if (!cardRef.current) return;
-        const rect = cardRef.current.getBoundingClientRect();
-        const x = (e.clientX - rect.left) / rect.width - 0.5;
-        const y = (e.clientY - rect.top) / rect.height - 0.5;
-        setMousePos({ x, y });
-    };
-
-    const handleMouseEnter = () => setIsHovered(true);
-    const handleMouseLeave = () => {
-        setIsHovered(false);
-        setMousePos({ x: 0, y: 0 });
-    };
-
-    // 3D tilt calculation (max ±4deg)
-    const rotateX = isHovered ? mousePos.y * -4 : 0;
-    const rotateY = isHovered ? mousePos.x * 4 : 0;
-    const scale = isHovered ? 1.02 : 1;
-
-    const hasDesktopVideo = !!project.desktopVideo;
-    const hasMobileVideo = !!project.mobileVideo;
+// Realistic MacBook mockup
+const MacBookMockup: React.FC<{ project: ProjectData; isVisible: boolean }> = ({ project, isVisible }) => {
+    const [hasDesktopError, setHasDesktopError] = useState(false);
 
     return (
         <div
-            ref={cardRef}
-            className="relative w-full aspect-[4/3] mb-6"
-            onMouseMove={handleMouseMove}
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-            style={{
-                transform: `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(${scale})`,
-                transition: 'transform 300ms ease-out',
-            }}
+            className={`relative w-full transition-all duration-700 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+            style={{ transitionDelay: '0ms' }}
         >
-            {/* MacBook Frame */}
-            <div
-                className={`absolute left-0 top-0 w-[68%] h-full transition-all duration-600 ease-out ${isVisible ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-[30px] scale-[0.96]'}`}
-                style={{ transitionDelay: '0ms' }}
-            >
-                {/* Screen */}
-                <div className="relative w-full h-[96%] rounded-t-xl border-[3px] border-[#1a1a1a] bg-black overflow-hidden">
-                    {/* Camera dot */}
-                    <div className="absolute top-1 left-1/2 -translate-x-1/2 w-[2px] h-[2px] rounded-full bg-[#333] z-10" aria-hidden="true" />
-                    {/* Screenshot or Video */}
-                    <div className="w-full h-full p-[10px]">
-                        {hasDesktopVideo ? (
+            {/* MacBook Body */}
+            <div className="relative">
+                {/* Screen bezel */}
+                <div className="relative bg-gradient-to-b from-[#2a2a2a] to-[#1a1a1a] rounded-t-2xl p-3 pb-2 shadow-2xl">
+                    {/* Camera notch */}
+                    <div className="absolute top-1 left-1/2 -translate-x-1/2 w-16 h-1 bg-black rounded-full flex items-center justify-center">
+                        <div className="w-1 h-1 rounded-full bg-[#333]" aria-hidden="true" />
+                    </div>
+                    
+                    {/* Screen */}
+                    <div className="relative bg-black rounded-lg overflow-hidden aspect-[16/10]">
+                        {project.desktopVideo && !hasDesktopError ? (
                             <LazyVideo
-                                src={project.desktopVideo!}
+                                src={project.desktopVideo}
                                 poster={project.desktopImage}
                                 alt={`${project.name} — vista de escritorio`}
-                                className="w-full h-full object-cover rounded-sm"
+                                className="w-full h-full object-cover"
                             />
                         ) : (
                             <img
                                 src={project.desktopImage}
                                 alt={`${project.name} — vista de escritorio`}
-                                className="w-full h-full object-cover rounded-sm"
-                                onError={(e) => {
-                                    e.currentTarget.style.display = 'none';
-                                    const parent = e.currentTarget.parentElement;
-                                    if (parent && !parent.querySelector('.placeholder')) {
-                                        const placeholder = document.createElement('div');
-                                        placeholder.className = 'placeholder w-full h-full bg-[#111111] flex items-center justify-center border border-[rgba(0,255,135,0.15)] rounded-sm';
-                                        placeholder.innerHTML = `<span class="text-[#00ff87]/40 text-2xl font-bold">${project.initials}</span>`;
-                                        parent.appendChild(placeholder);
-                                    }
-                                }}
+                                className="w-full h-full object-cover"
+                                onError={() => setHasDesktopError(true)}
                             />
                         )}
+                        {hasDesktopError && <Placeholder initials={project.initials} />}
                     </div>
                 </div>
-                {/* Base/keyboard bar */}
-                <div
-                    className="w-[104%] h-[4%] -ml-[2%] rounded-b-lg bg-gradient-to-b from-[#2a2a2a] to-[#1a1a1a]"
-                    aria-hidden="true"
-                />
+                
+                {/* Base with keyboard */}
+                <div className="relative">
+                    {/* Hinge */}
+                    <div className="h-2 bg-gradient-to-b from-[#1a1a1a] to-[#2a2a2a]" aria-hidden="true" />
+                    
+                    {/* Keyboard deck */}
+                    <div className="bg-gradient-to-b from-[#2a2a2a] to-[#1a1a1a] rounded-b-xl p-4 shadow-2xl">
+                        {/* Keyboard area */}
+                        <div className="bg-[#0a0a0a] rounded-lg p-3 mb-2">
+                            <div className="grid grid-cols-12 gap-1">
+                                {Array.from({ length: 36 }).map((_, i) => (
+                                    <div key={i} className="h-2 bg-[#1a1a1a] rounded-sm" aria-hidden="true" />
+                                ))}
+                            </div>
+                        </div>
+                        
+                        {/* Trackpad */}
+                        <div className="w-32 h-20 mx-auto bg-gradient-to-b from-[#1a1a1a] to-[#0a0a0a] rounded-lg border border-[#2a2a2a]" aria-hidden="true" />
+                    </div>
+                    
+                    {/* Bottom edge */}
+                    <div className="h-1 bg-gradient-to-b from-[#1a1a1a] to-[#0a0a0a] rounded-b-lg" aria-hidden="true" />
+                </div>
             </div>
+        </div>
+    );
+};
 
-            {/* Phone Frame */}
-            <div
-                className={`absolute bottom-[15%] right-[-10%] w-[30%] aspect-[9/19] z-10 transition-all duration-600 ease-out ${isVisible ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-[30px] scale-[0.96]'}`}
-                style={{
-                    transitionDelay: '200ms',
-                    filter: 'drop-shadow(0 12px 24px rgba(0,0,0,0.4))',
-                }}
-            >
-                {/* Phone body */}
-                <div className="relative w-full h-full rounded-[2.5rem] border-[8px] border-[#1a1a1a] bg-black overflow-hidden">
-                    {/* Dynamic island */}
-                    <div className="absolute top-2 left-1/2 -translate-x-1/2 w-[40%] h-[5%] bg-black rounded-full z-10" aria-hidden="true" />
-                    {/* Screenshot or Video */}
-                    {hasMobileVideo ? (
+// Realistic phone mockup
+const PhoneMockup: React.FC<{ project: ProjectData; isVisible: boolean }> = ({ project, isVisible }) => {
+    const [hasMobileError, setHasMobileError] = useState(false);
+
+    return (
+        <div
+            className={`relative w-48 mx-auto transition-all duration-700 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+            style={{ transitionDelay: '200ms' }}
+        >
+            {/* Phone body */}
+            <div className="relative bg-gradient-to-b from-[#2a2a2a] to-[#1a1a1a] rounded-[3rem] p-3 shadow-2xl">
+                {/* Side buttons */}
+                <div className="absolute top-20 -left-[2px] w-[2px] h-8 bg-[#1a1a1a] rounded-l" aria-hidden="true" />
+                <div className="absolute top-32 -left-[2px] w-[2px] h-12 bg-[#1a1a1a] rounded-l" aria-hidden="true" />
+                <div className="absolute top-24 -right-[2px] w-[2px] h-10 bg-[#1a1a1a] rounded-r" aria-hidden="true" />
+                
+                {/* Screen */}
+                <div className="relative bg-black rounded-[2.5rem] overflow-hidden aspect-[9/19]">
+                    {/* Dynamic island / notch */}
+                    <div className="absolute top-2 left-1/2 -translate-x-1/2 w-20 h-5 bg-black rounded-full z-10" aria-hidden="true" />
+                    
+                    {/* Content */}
+                    {project.mobileVideo && !hasMobileError ? (
                         <LazyVideo
-                            src={project.mobileVideo!}
+                            src={project.mobileVideo}
                             poster={project.mobileImage}
                             alt={`${project.name} — vista mobile`}
                             className="w-full h-full object-cover"
@@ -234,21 +224,10 @@ const DeviceMockup: React.FC<{ project: ProjectData; isVisible: boolean }> = ({ 
                             src={project.mobileImage}
                             alt={`${project.name} — vista mobile`}
                             className="w-full h-full object-cover"
-                            onError={(e) => {
-                                e.currentTarget.style.display = 'none';
-                                const parent = e.currentTarget.parentElement;
-                                if (parent && !parent.querySelector('.placeholder')) {
-                                    const placeholder = document.createElement('div');
-                                    placeholder.className = 'placeholder w-full h-full bg-[#111111] flex items-center justify-center border border-[rgba(0,255,135,0.15)] rounded-lg';
-                                    placeholder.innerHTML = `<span class="text-[#00ff87]/40 text-xl font-bold">${project.initials}</span>`;
-                                    parent.appendChild(placeholder);
-                                }
-                            }}
+                            onError={() => setHasMobileError(true)}
                         />
                     )}
-                    {/* Side buttons */}
-                    <div className="absolute top-[20%] right-[-2px] w-[2px] h-[8%] bg-[#1a1a1a] rounded-l" aria-hidden="true" />
-                    <div className="absolute top-[32%] right-[-2px] w-[2px] h-[12%] bg-[#1a1a1a] rounded-l" aria-hidden="true" />
+                    {hasMobileError && <Placeholder initials={project.initials} />}
                 </div>
             </div>
         </div>
@@ -282,14 +261,15 @@ const ProjectCard: React.FC<{ project: ProjectData }> = ({ project }) => {
             ref={cardRef}
             className="flex-shrink-0 w-[85vw] md:w-[400px] lg:w-[460px] scroll-snap-align-start"
         >
-            <div className="group relative bg-[#111111] rounded-2xl border border-white/5 overflow-hidden flex flex-col h-full motion-safe:transition-all motion-safe:duration-250 ease-in-out hover:border-[rgba(0,255,135,0.4)] hover:shadow-[0_8px_32px_rgba(0,255,135,0.08)]">
-                {/* Device Mockup */}
-                <div className="p-6 pb-0">
-                    <DeviceMockup project={project} isVisible={isVisible} />
+            <div className="group relative bg-[#111111] rounded-2xl border border-white/5 overflow-hidden flex flex-col h-full hover:border-[rgba(0,255,135,0.4)] hover:shadow-[0_8px_32px_rgba(0,255,135,0.08)] transition-all duration-300">
+                {/* Device Mockups */}
+                <div className="p-6 pb-0 space-y-6">
+                    <MacBookMockup project={project} isVisible={isVisible} />
+                    <PhoneMockup project={project} isVisible={isVisible} />
                 </div>
 
                 {/* Content */}
-                <div className="p-6 pt-0 flex flex-col flex-grow">
+                <div className="p-6 flex flex-col flex-grow">
                     <span className="text-[#00ff87] text-xs font-bold uppercase tracking-wider mb-3 block">{project.rubro}</span>
                     <h4 className="text-2xl font-bold text-white mb-3">{project.name}</h4>
                     <p className="text-text-secondary text-sm leading-relaxed mb-6 flex-grow">
@@ -307,9 +287,9 @@ const ProjectCard: React.FC<{ project: ProjectData }> = ({ project }) => {
                         target="_blank"
                         rel="noopener noreferrer"
                         aria-label={project.linkAriaLabel}
-                        className="inline-flex items-center text-white font-medium hover:text-[#00ff87] motion-safe:transition-colors mt-auto w-fit focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00ff87] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a] rounded"
+                        className="inline-flex items-center text-white font-medium hover:text-[#00ff87] transition-colors mt-auto w-fit focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00ff87] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a] rounded"
                     >
-                        Ver sitio <span className="ml-2 group-hover:translate-x-1 motion-safe:transition-transform motion-reduce:group-hover:translate-x-0">→</span>
+                        Ver sitio <span className="ml-2 group-hover:translate-x-1 transition-transform">→</span>
                     </a>
                 </div>
             </div>
@@ -353,7 +333,6 @@ export const Projects: React.FC = () => {
 
     return (
         <section id="proyectos" className="py-24 bg-[#0a0a0a] relative border-t border-white/5">
-            {/* Custom styles for carousel */}
             <style>
                 {`
                 .carousel-container {
@@ -365,12 +344,6 @@ export const Projects: React.FC = () => {
                 }
                 .scroll-snap-align-start {
                     scroll-snap-align: start;
-                }
-                @media (prefers-reduced-motion: reduce) {
-                    .motion-reduce-transition-none * {
-                        transition: none !important;
-                        transform: none !important;
-                    }
                 }
                 `}
             </style>
@@ -391,7 +364,7 @@ export const Projects: React.FC = () => {
                         </div>
                     </RevealOnScroll>
 
-                    {/* Navigation arrows — desktop only */}
+                    {/* Navigation arrows */}
                     <div className="hidden lg:flex items-center gap-3">
                         <button
                             onClick={() => scrollByCard('left')}
@@ -424,7 +397,7 @@ export const Projects: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Carousel Container */}
+                {/* Carousel */}
                 <div className="relative">
                     <div
                         ref={carouselRef}
@@ -438,7 +411,7 @@ export const Projects: React.FC = () => {
                         ))}
                     </div>
 
-                    {/* Right edge fade mask */}
+                    {/* Right edge fade */}
                     {canScrollRight && (
                         <div
                             className="absolute top-0 right-0 w-16 h-full pointer-events-none bg-gradient-to-l from-[#0a0a0a] to-transparent"
