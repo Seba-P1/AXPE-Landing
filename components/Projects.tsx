@@ -9,8 +9,6 @@ interface ProjectData {
     tech: string[];
     desktopImage: string;
     mobileImage: string;
-    desktopVideo?: string;
-    mobileVideo?: string;
     link: string;
     linkAriaLabel: string;
     initials: string;
@@ -23,10 +21,8 @@ const projects: ProjectData[] = [
         name: 'YPF El Puente',
         description: 'Menú digital con carrito de compra, catálogo de combustibles premium y boxes de servicio para la estación YPF de Río Colorado, con ubicación y WhatsApp integrados.',
         tech: ['Next.js', 'React', 'Tailwind CSS'],
-        desktopImage: '/images/proyectos/ypfelpuente-hero.jpg',
-        mobileImage: '/images/proyectos/ypfelpuente-mobile.jpg',
-        desktopVideo: '/images/proyectos/ypfelpuente-hero.webm',
-        mobileVideo: '/images/proyectos/ypfelpuente-mobile.webm',
+        desktopImage: '/images/proyectos/ypfelpuente-hero.png',
+        mobileImage: '/images/proyectos/ypfelpuente-mobile.png',
         link: 'https://ypfelpuente.netlify.app/',
         linkAriaLabel: 'Ver sitio de YPF El Puente (abre en nueva pestaña)',
         initials: 'YPF'
@@ -37,10 +33,8 @@ const projects: ProjectData[] = [
         name: 'Juan Güenumil Inmobiliaria',
         description: 'Sistema completo de gestión de propiedades con búsqueda en tiempo real, listados con fotos y contacto integrado para inmobiliaria de la Patagonia.',
         tech: ['Next.js', 'Supabase', 'React', 'Tailwind CSS'],
-        desktopImage: '/images/proyectos/guenumil-hero.jpg',
-        mobileImage: '/images/proyectos/guenumil-mobile.jpg',
-        desktopVideo: '/images/proyectos/guenumil-hero.webm',
-        mobileVideo: '/images/proyectos/guenumil-mobile.webm',
+        desktopImage: '/images/proyectos/guenumil-hero.png',
+        mobileImage: '/images/proyectos/guenumil-mobile.png',
         link: 'https://juanguenumil.com.ar/',
         linkAriaLabel: 'Ver sitio de Juan Güenumil Inmobiliaria (abre en nueva pestaña)',
         initials: 'JG'
@@ -51,10 +45,8 @@ const projects: ProjectData[] = [
         name: 'RC Play',
         description: 'Plataforma de entretenimiento digital para el mercado de Río Negro. Diseño y desarrollo completo desde cero.',
         tech: ['Next.js', 'React', 'Tailwind CSS'],
-        desktopImage: '/images/proyectos/rcplay-hero.jpg',
-        mobileImage: '/images/proyectos/rcplay-mobile.jpg',
-        desktopVideo: '/images/proyectos/rcplay-hero.webm',
-        mobileVideo: '/images/proyectos/rcplay-mobile.webm',
+        desktopImage: '/images/proyectos/rcplay-hero.png',
+        mobileImage: '/images/proyectos/rcplay-mobile.png',
         link: 'https://rcplay.com.ar/',
         linkAriaLabel: 'Ver sitio de RC Play (abre en nueva pestaña)',
         initials: 'RC'
@@ -63,178 +55,35 @@ const projects: ProjectData[] = [
 
 // Placeholder component
 const Placeholder: React.FC<{ initials: string }> = ({ initials }) => (
-    <div className="w-full h-full bg-gradient-to-br from-[#1a1a1a] to-[#0a0a0a] flex items-center justify-center border border-[rgba(0,255,135,0.2)]">
-        <span className="text-[#00ff87]/30 text-5xl font-bold font-display tracking-wider">{initials}</span>
+    <div className="w-full h-full bg-gradient-to-br from-[#1a1a1a] to-[#0a0a0a] flex items-center justify-center">
+        <span className="text-[#00ff87]/30 text-4xl font-bold font-display tracking-wider">{initials}</span>
     </div>
 );
 
-// Video component with lazy loading
-const LazyVideo: React.FC<{
+// Imagen con fallback a placeholder
+const ProjectImage: React.FC<{
     src: string;
-    poster: string;
     alt: string;
+    initials: string;
     className?: string;
-}> = ({ src, poster, alt, className = '' }) => {
-    const videoRef = useRef<HTMLVideoElement>(null);
-    const [isVisible, setIsVisible] = useState(false);
+}> = ({ src, alt, initials, className = '' }) => {
     const [hasError, setHasError] = useState(false);
 
-    useEffect(() => {
-        const observer = new IntersectionObserver(
-            ([entry]) => {
-                if (entry.isIntersecting) {
-                    setIsVisible(true);
-                    if (videoRef.current) {
-                        videoRef.current.play().catch(() => {});
-                    }
-                } else {
-                    setIsVisible(false);
-                    if (videoRef.current) {
-                        videoRef.current.pause();
-                    }
-                }
-            },
-            { threshold: 0.3 }
-        );
-
-        if (videoRef.current) observer.observe(videoRef.current);
-        return () => {
-            if (videoRef.current) observer.unobserve(videoRef.current);
-        };
-    }, []);
-
     if (hasError) {
-        return <img src={poster} alt={alt} className={className} />;
+        return <Placeholder initials={initials} />;
     }
 
     return (
-        <video
-            ref={videoRef}
+        <img
+            src={src}
+            alt={alt}
             className={className}
-            muted
-            loop
-            playsInline
-            preload="none"
-            poster={poster}
             onError={() => setHasError(true)}
-        >
-            {isVisible && <source src={src} type="video/webm" />}
-        </video>
+        />
     );
 };
 
-// Realistic MacBook mockup
-const MacBookMockup: React.FC<{ project: ProjectData; isVisible: boolean }> = ({ project, isVisible }) => {
-    const [hasDesktopError, setHasDesktopError] = useState(false);
-
-    return (
-        <div
-            className={`relative w-full transition-all duration-700 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
-            style={{ transitionDelay: '0ms' }}
-        >
-            {/* MacBook Body */}
-            <div className="relative">
-                {/* Screen bezel */}
-                <div className="relative bg-gradient-to-b from-[#2a2a2a] to-[#1a1a1a] rounded-t-2xl p-3 pb-2 shadow-2xl">
-                    {/* Camera notch */}
-                    <div className="absolute top-1 left-1/2 -translate-x-1/2 w-16 h-1 bg-black rounded-full flex items-center justify-center">
-                        <div className="w-1 h-1 rounded-full bg-[#333]" aria-hidden="true" />
-                    </div>
-                    
-                    {/* Screen */}
-                    <div className="relative bg-black rounded-lg overflow-hidden aspect-[16/10]">
-                        {project.desktopVideo && !hasDesktopError ? (
-                            <LazyVideo
-                                src={project.desktopVideo}
-                                poster={project.desktopImage}
-                                alt={`${project.name} — vista de escritorio`}
-                                className="w-full h-full object-cover"
-                            />
-                        ) : (
-                            <img
-                                src={project.desktopImage}
-                                alt={`${project.name} — vista de escritorio`}
-                                className="w-full h-full object-cover"
-                                onError={() => setHasDesktopError(true)}
-                            />
-                        )}
-                        {hasDesktopError && <Placeholder initials={project.initials} />}
-                    </div>
-                </div>
-                
-                {/* Base with keyboard */}
-                <div className="relative">
-                    {/* Hinge */}
-                    <div className="h-2 bg-gradient-to-b from-[#1a1a1a] to-[#2a2a2a]" aria-hidden="true" />
-                    
-                    {/* Keyboard deck */}
-                    <div className="bg-gradient-to-b from-[#2a2a2a] to-[#1a1a1a] rounded-b-xl p-4 shadow-2xl">
-                        {/* Keyboard area */}
-                        <div className="bg-[#0a0a0a] rounded-lg p-3 mb-2">
-                            <div className="grid grid-cols-12 gap-1">
-                                {Array.from({ length: 36 }).map((_, i) => (
-                                    <div key={i} className="h-2 bg-[#1a1a1a] rounded-sm" aria-hidden="true" />
-                                ))}
-                            </div>
-                        </div>
-                        
-                        {/* Trackpad */}
-                        <div className="w-32 h-20 mx-auto bg-gradient-to-b from-[#1a1a1a] to-[#0a0a0a] rounded-lg border border-[#2a2a2a]" aria-hidden="true" />
-                    </div>
-                    
-                    {/* Bottom edge */}
-                    <div className="h-1 bg-gradient-to-b from-[#1a1a1a] to-[#0a0a0a] rounded-b-lg" aria-hidden="true" />
-                </div>
-            </div>
-        </div>
-    );
-};
-
-// Realistic phone mockup
-const PhoneMockup: React.FC<{ project: ProjectData; isVisible: boolean }> = ({ project, isVisible }) => {
-    const [hasMobileError, setHasMobileError] = useState(false);
-
-    return (
-        <div
-            className={`relative w-48 mx-auto transition-all duration-700 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
-            style={{ transitionDelay: '200ms' }}
-        >
-            {/* Phone body */}
-            <div className="relative bg-gradient-to-b from-[#2a2a2a] to-[#1a1a1a] rounded-[3rem] p-3 shadow-2xl">
-                {/* Side buttons */}
-                <div className="absolute top-20 -left-[2px] w-[2px] h-8 bg-[#1a1a1a] rounded-l" aria-hidden="true" />
-                <div className="absolute top-32 -left-[2px] w-[2px] h-12 bg-[#1a1a1a] rounded-l" aria-hidden="true" />
-                <div className="absolute top-24 -right-[2px] w-[2px] h-10 bg-[#1a1a1a] rounded-r" aria-hidden="true" />
-                
-                {/* Screen */}
-                <div className="relative bg-black rounded-[2.5rem] overflow-hidden aspect-[9/19]">
-                    {/* Dynamic island / notch */}
-                    <div className="absolute top-2 left-1/2 -translate-x-1/2 w-20 h-5 bg-black rounded-full z-10" aria-hidden="true" />
-                    
-                    {/* Content */}
-                    {project.mobileVideo && !hasMobileError ? (
-                        <LazyVideo
-                            src={project.mobileVideo}
-                            poster={project.mobileImage}
-                            alt={`${project.name} — vista mobile`}
-                            className="w-full h-full object-cover"
-                        />
-                    ) : (
-                        <img
-                            src={project.mobileImage}
-                            alt={`${project.name} — vista mobile`}
-                            className="w-full h-full object-cover"
-                            onError={() => setHasMobileError(true)}
-                        />
-                    )}
-                    {hasMobileError && <Placeholder initials={project.initials} />}
-                </div>
-            </div>
-        </div>
-    );
-};
-
-// Individual project card
+// Individual project card - solo imagen de fondo + info
 const ProjectCard: React.FC<{ project: ProjectData }> = ({ project }) => {
     const [isVisible, setIsVisible] = useState(false);
     const cardRef = useRef<HTMLDivElement>(null);
@@ -259,18 +108,25 @@ const ProjectCard: React.FC<{ project: ProjectData }> = ({ project }) => {
     return (
         <div
             ref={cardRef}
-            className="flex-shrink-0 w-[85vw] md:w-[400px] lg:w-[460px] scroll-snap-align-start"
+            className={`flex-shrink-0 w-[85vw] md:w-[400px] lg:w-[460px] scroll-snap-align-start transition-all duration-700 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
         >
-            <div className="group relative bg-[#111111] rounded-2xl border border-white/5 overflow-hidden flex flex-col h-full hover:border-[rgba(0,255,135,0.4)] hover:shadow-[0_8px_32px_rgba(0,255,135,0.08)] transition-all duration-300">
-                {/* Device Mockups */}
-                <div className="p-6 pb-0 space-y-6">
-                    <MacBookMockup project={project} isVisible={isVisible} />
-                    <PhoneMockup project={project} isVisible={isVisible} />
+            <div className="group relative rounded-2xl border border-white/5 overflow-hidden flex flex-col h-full hover:border-[rgba(0,255,135,0.4)] hover:shadow-[0_8px_32px_rgba(0,255,135,0.08)] transition-all duration-300">
+                {/* Imagen de fondo */}
+                <div className="relative h-56 overflow-hidden">
+                    <ProjectImage
+                        src={project.desktopImage}
+                        alt={`${project.name} — vista de escritorio`}
+                        initials={project.initials}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#111111] via-[#111111]/50 to-transparent" />
+                    <div className="absolute bottom-4 left-6 right-6">
+                        <span className="text-[#00ff87] text-xs font-bold uppercase tracking-wider">{project.rubro}</span>
+                    </div>
                 </div>
 
                 {/* Content */}
-                <div className="p-6 flex flex-col flex-grow">
-                    <span className="text-[#00ff87] text-xs font-bold uppercase tracking-wider mb-3 block">{project.rubro}</span>
+                <div className="p-6 flex flex-col flex-grow bg-[#111111]">
                     <h4 className="text-2xl font-bold text-white mb-3">{project.name}</h4>
                     <p className="text-text-secondary text-sm leading-relaxed mb-6 flex-grow">
                         {project.description}
@@ -294,6 +150,188 @@ const ProjectCard: React.FC<{ project: ProjectData }> = ({ project }) => {
                 </div>
             </div>
         </div>
+    );
+};
+
+// Real mockup components using PNG images with overlay
+const DesktopMockup: React.FC<{ imageSrc: string; alt: string; initials: string }> = ({ imageSrc, alt, initials }) => {
+    const [hasError, setHasError] = useState(false);
+    
+    return (
+        <div className="w-full max-w-4xl mx-auto">
+            {/* Container with exact aspect ratio of hollow mockup (2636:1619) */}
+            <div className="relative w-full" style={{ aspectRatio: '2636 / 1619' }}>
+                {/* Project image BEHIND the mockup — covers the screen hole area */}
+                {/* Hole bbox: left=8.4977% top=1.9148% w=82.9666% h=86.7820% (with margin to fully cover) */}
+                <div
+                    className="absolute overflow-hidden"
+                    style={{
+                        top: '1.4%',
+                        left: '7.9%',
+                        width: '84.1%',
+                        height: '87.9%',
+                        zIndex: 1,
+                    }}
+                >
+                    {hasError ? (
+                        <Placeholder initials={initials} />
+                    ) : (
+                        <img
+                            src={imageSrc}
+                            alt={alt}
+                            className="w-full h-full object-cover"
+                            onError={() => setHasError(true)}
+                        />
+                    )}
+                </div>
+                
+                {/* Hollow mockup ON TOP — transparent screen hole clips the image perfectly */}
+                <img
+                    src="/images/mockups/mockup-mac-hollow.png"
+                    alt="MacBook mockup"
+                    className="absolute inset-0 w-full h-full"
+                    style={{ zIndex: 2 }}
+                />
+            </div>
+        </div>
+    );
+};
+
+const MobileMockup: React.FC<{ images: Array<{ src: string; alt: string; initials: string }>; }> = ({ images }) => {
+    return (
+        <div className="relative w-full max-w-3xl mx-auto h-[520px] flex items-center justify-center">
+            {/* Back left phone (perspective) */}
+            <div className="absolute left-[16%] top-1/2 -translate-y-1/2 w-[200px] h-[420px] transform -rotate-12 opacity-45">
+                <div className="relative h-full rounded-[2.8rem] bg-gradient-to-b from-[#555] via-[#3a3a3a] to-[#2a2a2a] p-[3px] shadow-2xl">
+                    <div className="relative h-full rounded-[2.6rem] bg-[#111] p-[2px] overflow-hidden">
+                        <div className="absolute top-[6px] left-1/2 -translate-x-1/2 z-20 w-[70px] h-[18px] bg-[#000] rounded-full"></div>
+                        <div className="relative h-full w-full rounded-[2.4rem] overflow-hidden bg-[#0a0a0a]">
+                            {images[1]?.src ? (
+                                <img src={images[1].src} alt={images[1].alt} className="w-full h-full object-cover" />
+                            ) : (
+                                <Placeholder initials={images[1]?.initials || '??'} />
+                            )}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            {/* Back right phone (perspective) */}
+            <div className="absolute right-[16%] top-1/2 -translate-y-1/2 w-[200px] h-[420px] transform rotate-12 opacity-45">
+                <div className="relative h-full rounded-[2.8rem] bg-gradient-to-b from-[#555] via-[#3a3a3a] to-[#2a2a2a] p-[3px] shadow-2xl">
+                    <div className="relative h-full rounded-[2.6rem] bg-[#111] p-[2px] overflow-hidden">
+                        <div className="absolute top-[6px] left-1/2 -translate-x-1/2 z-20 w-[70px] h-[18px] bg-[#000] rounded-full"></div>
+                        <div className="relative h-full w-full rounded-[2.4rem] overflow-hidden bg-[#0a0a0a]">
+                            {images[2]?.src ? (
+                                <img src={images[2].src} alt={images[2].alt} className="w-full h-full object-cover" />
+                            ) : (
+                                <Placeholder initials={images[2]?.initials || '??'} />
+                            )}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            {/* Front phone (center, full opacity) */}
+            <div className="relative w-[240px] h-[480px] z-10">
+                <div className="relative h-full rounded-[3rem] bg-gradient-to-b from-[#666] via-[#444] to-[#333] p-[3px] shadow-2xl">
+                    <div className="relative h-full rounded-[2.8rem] bg-[#111] p-[2px] overflow-hidden">
+                        <div className="absolute top-[8px] left-1/2 -translate-x-1/2 z-20 w-[80px] h-[20px] bg-[#000] rounded-full"></div>
+                        <div className="relative h-full w-full rounded-[2.6rem] overflow-hidden bg-[#0a0a0a]">
+                            {images[0]?.src ? (
+                                <img src={images[0].src} alt={images[0].alt} className="w-full h-full object-cover" />
+                            ) : (
+                                <Placeholder initials={images[0]?.initials || '??'} />
+                            )}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// Mockup section with rotating images
+const MockupShowcase: React.FC<{
+    type: 'mobile' | 'desktop';
+}> = ({ type }) => {
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [isTransitioning, setIsTransitioning] = useState(false);
+    const sectionRef = useRef<HTMLDivElement>(null);
+    const [isVisible, setIsVisible] = useState(false);
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    setIsVisible(true);
+                } else {
+                    setIsVisible(false);
+                }
+            },
+            { threshold: 0.2 }
+        );
+
+        if (sectionRef.current) observer.observe(sectionRef.current);
+        return () => {
+            if (sectionRef.current) observer.unobserve(sectionRef.current);
+        };
+    }, []);
+
+    useEffect(() => {
+        if (!isVisible) return;
+
+        const interval = setInterval(() => {
+            setIsTransitioning(true);
+            setTimeout(() => {
+                setCurrentIndex(prev => {
+                    const next = Math.floor(Math.random() * projects.length);
+                    return next === prev ? (prev + 1) % projects.length : next;
+                });
+                setIsTransitioning(false);
+            }, 500);
+        }, 4000);
+
+        return () => clearInterval(interval);
+    }, [isVisible]);
+
+    const currentProject = projects[currentIndex];
+    const imageSrc = type === 'mobile' ? currentProject.mobileImage : currentProject.desktopImage;
+
+    return (
+        <section ref={sectionRef} className="py-24 relative overflow-hidden">
+            <div className="container mx-auto px-6 max-w-7xl">
+                <RevealOnScroll>
+                    <div className="text-center mb-12">
+                        <h2 className="text-[#00ff87] font-bold tracking-widest uppercase text-xs mb-3">
+                            {type === 'mobile' ? 'VISTA MOBILE' : 'VISTA ESCRITORIO'}
+                        </h2>
+                        <h3 className="font-display text-4xl md:text-5xl font-bold text-white mb-4">
+                            {type === 'mobile' ? 'Experiencia en tu mano' : 'Diseño en pantalla grande'}
+                        </h3>
+                    </div>
+                </RevealOnScroll>
+
+                {/* Mockup CSS puro */}
+                <div className={`relative transition-all duration-1000 ${isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
+                    {type === 'desktop' ? (
+                        <DesktopMockup
+                            imageSrc={imageSrc}
+                            alt={`${currentProject.name} — vista escritorio`}
+                            initials={currentProject.initials}
+                        />
+                    ) : (
+                        <MobileMockup
+                            images={[
+                                { src: currentProject.desktopImage, alt: `${currentProject.name} — vista mobile`, initials: currentProject.initials },
+                                { src: projects[(currentIndex + 1) % projects.length].desktopImage, alt: 'Proyecto mobile', initials: projects[(currentIndex + 1) % projects.length].initials },
+                                { src: projects[(currentIndex + 2) % projects.length].desktopImage, alt: 'Proyecto mobile', initials: projects[(currentIndex + 2) % projects.length].initials },
+                            ]}
+                        />
+                    )}
+                </div>
+            </div>
+        </section>
     );
 };
 
@@ -332,7 +370,7 @@ export const Projects: React.FC = () => {
     };
 
     return (
-        <section id="proyectos" className="py-24 bg-[#0a0a0a] relative border-t border-white/5">
+        <section id="proyectos" className="bg-[#0a0a0a] relative border-t border-white/5">
             <style>
                 {`
                 .carousel-container {
@@ -350,7 +388,7 @@ export const Projects: React.FC = () => {
 
             <div className="container mx-auto px-6 max-w-7xl">
                 {/* Section Header */}
-                <div className="mb-12 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
+                <div className="py-24 mb-12 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
                     <RevealOnScroll>
                         <div>
                             <h2 className="text-[#00ff87] font-bold tracking-widest uppercase text-xs mb-3">TRABAJO REAL</h2>
@@ -397,8 +435,8 @@ export const Projects: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Carousel */}
-                <div className="relative">
+                {/* Carousel de tarjetas */}
+                <div className="relative mb-24">
                     <div
                         ref={carouselRef}
                         className="flex gap-6 lg:gap-8 overflow-x-auto carousel-container scroll-snap-x scroll-snap-mandatory pb-4"
@@ -420,6 +458,12 @@ export const Projects: React.FC = () => {
                     )}
                 </div>
             </div>
+
+            {/* Sección Mockup iPhone */}
+            <MockupShowcase type="mobile" />
+
+            {/* Sección Mockup MacBook */}
+            <MockupShowcase type="desktop" />
         </section>
     );
 };
